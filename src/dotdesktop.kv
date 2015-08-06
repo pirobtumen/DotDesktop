@@ -11,7 +11,7 @@
 			Label:
 				size_hint: (0,1)
 				size: (85,0)
-				text: "Path:"
+				text: "File:"
 			TextInput:
 				size_hint: (0,1)
 				size: (300,0)
@@ -33,6 +33,17 @@
 			Label:
 				size_hint: (0,1)
 				size: (85,0)
+				text: "Description:"
+			TextInput:
+				size_hint: (0,1)
+				size: (300,0)
+				id: file_desc
+		
+		BoxLayout:
+			spacing: 15
+			Label:
+				size_hint: (0,1)
+				size: (85,0)
 				text: "Icon:"
 			TextInput:
 				size_hint: (0,1)
@@ -41,6 +52,7 @@
 			Button:
 				size_hint: (0,1)
 				text: "Search"
+				on_press: root.select_file( file_icon )
 				
 		BoxLayout:
 			spacing: 15
@@ -55,6 +67,7 @@
 			Button:
 				size_hint: (0,1)
 				text: "Search"
+				on_press: root.select_file( file_exec )
 
 		BoxLayout:
 			BoxLayout:

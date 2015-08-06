@@ -3,16 +3,14 @@
 		orientation: 'vertical'
 		
 		FileChooserListView:
+			size_hint: (1, 0.9)
 			id: open_file_chooser
 			
 		BoxLayout:
-		
-			width: 200
-			height: 200
-		
+			size_hint: (1,0.1)
 			Button:
 				text: "Open"
-				on_press: root.open()
+				on_press: root.open_file( open_file_chooser.selection )
 			Button:
 				text: "Close"
 				on_press: root.close_dialog()
