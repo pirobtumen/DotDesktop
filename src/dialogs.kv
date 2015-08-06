@@ -1,0 +1,18 @@
+<OpenFileDialog>:
+	BoxLayout:
+		orientation: 'vertical'
+		
+		FileChooserListView:
+			id: open_file_chooser
+			
+		BoxLayout:
+		
+			width: 200
+			height: 200
+		
+			Button:
+				text: "Open"
+				on_press: root.open()
+			Button:
+				text: "Close"
+				on_press: root.close_dialog()

@@ -1,0 +1,73 @@
+<DotDesktop>:
+	resizable: (None,None)
+	
+	BoxLayout:
+		orientation: 'vertical'
+		spacing: 10
+		padding: 7
+		
+		BoxLayout:
+			spacing: 15
+			Label:
+				size_hint: (0,1)
+				size: (85,0)
+				text: "Path:"
+			TextInput:
+				size_hint: (0,1)
+				size: (300,0)
+				id: file_path
+
+		BoxLayout:
+			spacing: 15
+			Label:
+				size_hint: (0,1)
+				size: (85,0)
+				text: "Name:"
+			TextInput:
+				size_hint: (0,1)
+				size: (300,0)
+				id: file_name
+		
+		BoxLayout:
+			spacing: 15
+			Label:
+				size_hint: (0,1)
+				size: (85,0)
+				text: "Icon:"
+			TextInput:
+				size_hint: (0,1)
+				size: (300,0)
+				id: file_icon
+			Button:
+				size_hint: (0,1)
+				text: "Search"
+				
+		BoxLayout:
+			spacing: 15
+			Label:
+				size_hint: (0,1)
+				size: (85,0)
+				text: "Executable:"
+			TextInput:
+				size_hint: (0,1)
+				size: (300,0)
+				id: file_exec
+			Button:
+				size_hint: (0,1)
+				text: "Search"
+
+		BoxLayout:
+			BoxLayout:
+				size_hint: (0.58,1)
+			BoxLayout:
+				size_hint: (0.42,1)
+				spacing: 10
+				Button:
+					size_hint: (0,1)
+					id: open_file
+					text: "Open file"
+					on_press: root.open_file()
+				Button:
+					size_hint: (0,1)
+					id: new_file
+					text: "Save file"
