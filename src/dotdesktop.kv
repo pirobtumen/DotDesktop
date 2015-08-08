@@ -90,4 +90,4 @@
 					size_hint: (0,1)
 					id: new_file
 					text: "Save"
-					on_release: root.save_file()
+					on_release: root.check_before_save( new_file )

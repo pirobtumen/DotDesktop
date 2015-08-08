@@ -1,12 +1,16 @@
 from kivy.app import App
 
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 
 from kivy.core.window import Window
 from kivy.config import Config
 from kivy.lang import Builder
 
 from kivy.uix.popup import Popup
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.widget import Widget
 
 from kivy.properties import ObjectProperty
 
@@ -34,8 +38,91 @@ window_height = 250
 popup_width = 500
 popup_height = window_width
 
-# Open file dialog
+class AlertPopup(Popup):
+	'''
+		AlertPopup
+		==============================================================
+	
+		This class shows a Popup.
+		The Popup can display:
+			
+			- Alert. It only display a message and a cancel button.
+			- Prompt. If you pass a function to "on_accept" it will
+					  display a second button, "OK" that will execute
+					  the callback.
+		
+			- Both can display an extra message if you pas a string
+			  to "msg".
+		
+		@param string	title
+		@param string	msg [ optional ]
+		@param function	on_accept [ optional ]
+	'''
+	
+	def __init__(self, title, msg = '', on_accept = None, **kwargs ):
+		super(AlertPopup, self).__init__( **kwargs )
+		
+		# Define object vars
+		self.title = title
+		self.size_hint = (0.5,0.6)
+		self.accept_callback = on_accept
+		
+		# On dismiss
+		self.bind( on_dismiss = self.close )
+		
+		# Principal layout
+		layout = BoxLayout(orientation='vertical', padding=1)
+		
+		# Close button
+		btn_close = Button( text='Close' )
+		btn_close.bind(on_release=self.close )
+		
+		# Check if there is a message
+		if msg != '':
+			label = Label(text=msg)
+			layout.add_widget(label)
+		else:
+			layout.size_hint = (0.9, 0.9)
+		
+		# Check if it's a prompt
+		if self.accept_callback != None:
+			button_layout = BoxLayout(spacing=1)
+			
+			btn_accept = Button(text='Ok')
+			btn_accept.bind(on_release=self.accept)
+			
+			button_layout.add_widget(btn_accept)
+			button_layout.add_widget(btn_close)
+			layout.add_widget(button_layout)
+			
+		else:
+			layout.add_widget(btn_close)
+		
+		# Create Popup
+		self.add_widget(layout)
+		self.open()
+		
+	def close( self, instance ):
+		'''
+			Closes the popup.
+		'''
+		self.dismiss()
+		
+	def accept(self, instance):
+		'''
+			Closes the poppup and calls the callback.
+		'''
+		self.close(instance)
+		self.accept_callback(instance)
+
 class OpenFileDialog( BoxLayout ):
+	'''
+		Widget that contains a FileChooser where
+		the user can select a file.
+		
+			- open_file: function callback when press the open button.
+			- close_dialog: function callback that closes the popup.	
+	'''
 	
 	# Open button action
 	open_file = ObjectProperty( None )
@@ -43,8 +130,16 @@ class OpenFileDialog( BoxLayout ):
 	# Close button action
 	close_dialog = ObjectProperty( None )
 
-# Main Screen
 class DotDesktop(BoxLayout):
+	'''
+		//////////////////////////
+		//						//
+		//	Main Screen Widget  //
+		//						//
+		//////////////////////////	
+	'''
+	
+	# Get TextInput widgets from .kv
 	txt_input_name = ObjectProperty(None)
 	txt_input_desc = ObjectProperty(None)
 	txt_input_path = ObjectProperty(None)
@@ -56,22 +151,18 @@ class DotDesktop(BoxLayout):
 		
 		Window.size = (window_width,window_height);
 	
-	def close_popup(self):
+	def close_popup(self, instance = ObjectProperty(None)):
 		# Closes popup and restores size
 	
 		self.default_size()
-		
 		self.popup.dismiss()
 	
-	def show_popup(self, content):
+	def show_popup(self, title, content):
 		# Create a popup that contains the view
-		self.popup = Popup(title="Open file", content=content,
+		self.popup = Popup(title=title, content=content,
 		                    size_hint=(0.9, 0.9))
 		
-		# Get the user dir
-		content.ids.open_file_chooser.path = expanduser('~')
-		
-		# If the user clicks out
+		# On dismiss
 		self.popup.bind( on_dismiss = self.default_size )
 		
 		# Show the popup
@@ -86,7 +177,10 @@ class DotDesktop(BoxLayout):
 		# Load the FileChooser inside a Popup
 		content = OpenFileDialog( open_file=self.read_file ,close_dialog = self.close_popup )
 		
-		self.show_popup( content )
+		# Get the user dir
+		content.ids.open_file_chooser.path = expanduser('~')
+		
+		self.show_popup( "Open file", content )
 	
 	def read_file( self, files ):
 		# Read the .desktop file
@@ -98,8 +192,16 @@ class DotDesktop(BoxLayout):
 		file_dic = {}
 		
 		for line in file_txt:
+			
+			# Get a new line and split
 			line_part = line.split("=")
+			
+			# If there are two parts
 			if len(line_part) == 2:
+				
+				# Add new key to the dict.
+				# You can access every '.dektop' property with
+				# its name in lowercase and no spaces.
 				file_dic[ line_part[0].replace(" ", "").lower() ] = line_part[1]
 		
 		# Set TextInput text
@@ -108,8 +210,6 @@ class DotDesktop(BoxLayout):
 		self.txt_input_comment.text = file_dic.get("comment","")
 		self.txt_input_exec.text = file_dic.get("exec","")
 		self.txt_input_icon.text = file_dic.get("icon","")
-		
-		print file_dic
 		
 		# Close file and Popup
 		file_txt.close()		
@@ -122,33 +222,58 @@ class DotDesktop(BoxLayout):
 		# Load the FileChooser inside a Popup
 		content = OpenFileDialog( open_file=self.set_textinput, close_dialog = self.close_popup )
 		
-		self.show_popup( content )
+		# Get the user dir
+		content.ids.open_file_chooser.path = expanduser('~')
+		
+		# Show Popup
+		self.show_popup( "Select file", content )
 	
 	def set_textinput(self, files):
 		# Set TextInput text from FileChooser
 		self.text_input.text = files[0]
 		self.close_popup()
 		
-	def save_file(self):
+	def check_before_save(self, instance):
 		# Save the file
-		
+
 		# Set file path
-		file_path = self.txt_input_path.text
+		self.file_path = self.txt_input_path.text
+
+		# Check if file path is empty
+		if self.file_path == '':
+			AlertPopup("File path empty!")
 		
-		# Write file data
-		output_file = open( file_path, 'w' )
-		output_file.write("[Desktop Entry]\n")
-		output_file.write("Type=Application\n")
-		output_file.write("Name=" + self.txt_input_name.text.replace('\n', "") + '\n' )
-		output_file.write("Comment=" + self.txt_input_comment.text.replace('\n', "") + '\n' )
-		output_file.write("Icon=" + self.txt_input_icon.text.replace('\n', "") + '\n' )
-		output_file.write("Exec=" + self.txt_input_exec.text.replace('\n', "") + '\n')
-		output_file.close()
+		# Check if file exists
+		elif os.path.isfile( self.file_path ):
+			AlertPopup("Caution","Overwrite file?", self.save_file )
 		
-		# Set execute permissions
-		file_mode = os.stat( file_path )
-		os.chmod( file_path, file_mode.st_mode | stat.S_IEXEC )
+		# Save file
+		else:
+			self.save_file( instance )
 		
+	def save_file( self, instance ):
+			# Write file data
+			try:
+				output_file = open( self.file_path, 'w' )
+				output_file.write("[Desktop Entry]\n")
+				output_file.write("Type=Application\n")
+				output_file.write("Name=" + self.txt_input_name.text.replace('\n', "") + '\n' )
+				output_file.write("Comment=" + self.txt_input_comment.text.replace('\n', "") + '\n' )
+				output_file.write("Icon=" + self.txt_input_icon.text.replace('\n', "") + '\n' )
+				output_file.write("Exec=" + self.txt_input_exec.text.replace('\n', "") + '\n')
+				output_file.close()
+				
+				# Set execute permissions
+				file_mode = os.stat( self.file_path )
+				os.chmod( self.file_path, file_mode.st_mode | stat.S_IEXEC )
+				
+				#self.show_popup( "File saved!", AlertPopup() )
+				AlertPopup("File saved!")
+			
+			# Manage exceptions
+			except IOError:
+				AlertPopup("Error while saving", "File can't be saved.")				
+				
 		
 # Main class
 class DotDesktopApp(App):
