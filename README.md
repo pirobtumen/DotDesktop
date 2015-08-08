@@ -6,7 +6,7 @@ Simple app for creating and editing ```.desktop``` files.
 
  - **File**: 		File path with the file name.
  - **Name**: 		The way you want to name the app.
- - **Description**: Short app description.
+ - **Comment**: 	Short app comment.
  - **Icon**: 		Icon file (with complete path).
  - **Executable**: 	Exec file (with complete path).
 

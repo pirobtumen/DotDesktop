@@ -12,8 +12,10 @@ from kivy.properties import ObjectProperty
 
 from kivy.uix.textinput import TextInput
 
+import os
 from os.path import expanduser
-import re
+
+import stat
 
 # Personalize widgets
 TextInput.cursor_color = (0,0,0,1)
@@ -30,7 +32,7 @@ window_width = 540
 window_height = 250
 
 popup_width = 500
-popup_height = 500
+popup_height = window_width
 
 # Open file dialog
 class OpenFileDialog( BoxLayout ):
@@ -43,6 +45,11 @@ class OpenFileDialog( BoxLayout ):
 
 # Main Screen
 class DotDesktop(BoxLayout):
+	txt_input_name = ObjectProperty(None)
+	txt_input_desc = ObjectProperty(None)
+	txt_input_path = ObjectProperty(None)
+	txt_input_exec = ObjectProperty(None)
+	txt_input_icon = ObjectProperty(None)
 	
 	def default_size(self, instance = ObjectProperty(None)):
 		# Initial window size
@@ -84,8 +91,28 @@ class DotDesktop(BoxLayout):
 	def read_file( self, files ):
 		# Read the .desktop file
 		
+		# Open file
+		file_txt = open( files[0] )
 		
+		# Parse
+		file_dic = {}
 		
+		for line in file_txt:
+			line_part = line.split("=")
+			if len(line_part) == 2:
+				file_dic[ line_part[0].replace(" ", "").lower() ] = line_part[1]
+		
+		# Set TextInput text
+		self.txt_input_path.text = files[0]
+		self.txt_input_name.text = file_dic.get("name","")
+		self.txt_input_comment.text = file_dic.get("comment","")
+		self.txt_input_exec.text = file_dic.get("exec","")
+		self.txt_input_icon.text = file_dic.get("icon","")
+		
+		print file_dic
+		
+		# Close file and Popup
+		file_txt.close()		
 		self.close_popup()
 	
 	def select_file(self, text_input ):
@@ -93,7 +120,7 @@ class DotDesktop(BoxLayout):
 		self.text_input = text_input
 		
 		# Load the FileChooser inside a Popup
-		content = OpenFileDialog( open_file=self.set_textinput ,close_dialog = self.close_popup )
+		content = OpenFileDialog( open_file=self.set_textinput, close_dialog = self.close_popup )
 		
 		self.show_popup( content )
 	
@@ -101,6 +128,27 @@ class DotDesktop(BoxLayout):
 		# Set TextInput text from FileChooser
 		self.text_input.text = files[0]
 		self.close_popup()
+		
+	def save_file(self):
+		# Save the file
+		
+		# Set file path
+		file_path = self.txt_input_path.text
+		
+		# Write file data
+		output_file = open( file_path, 'w' )
+		output_file.write("[Desktop Entry]\n")
+		output_file.write("Type=Application\n")
+		output_file.write("Name=" + self.txt_input_name.text.replace('\n', "") + '\n' )
+		output_file.write("Comment=" + self.txt_input_comment.text.replace('\n', "") + '\n' )
+		output_file.write("Icon=" + self.txt_input_icon.text.replace('\n', "") + '\n' )
+		output_file.write("Exec=" + self.txt_input_exec.text.replace('\n', "") + '\n')
+		output_file.close()
+		
+		# Set execute permissions
+		file_mode = os.stat( file_path )
+		os.chmod( file_path, file_mode.st_mode | stat.S_IEXEC )
+		
 		
 # Main class
 class DotDesktopApp(App):

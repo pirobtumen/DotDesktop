@@ -1,3 +1,2 @@
-python2.7
-
-kivy
+python 2.7
+kivy 1.9.0

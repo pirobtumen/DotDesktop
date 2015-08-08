@@ -10,7 +10,7 @@
 			size_hint: (1,0.1)
 			Button:
 				text: "Open"
-				on_press: root.open_file( open_file_chooser.selection )
+				on_release: root.open_file( open_file_chooser.selection )
 			Button:
 				text: "Close"
-				on_press: root.close_dialog()
+				on_release: root.close_dialog()

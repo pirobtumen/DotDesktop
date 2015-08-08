@@ -1,4 +1,10 @@
 <DotDesktop>:
+	txt_input_name: file_name
+	txt_input_path: file_path
+	txt_input_icon: file_icon
+	txt_input_exec: file_exec
+	txt_input_comment: file_comment
+	
 	resizable: (None,None)
 	
 	BoxLayout:
@@ -33,11 +39,11 @@
 			Label:
 				size_hint: (0,1)
 				size: (85,0)
-				text: "Description:"
+				text: "Commentary:"
 			TextInput:
 				size_hint: (0,1)
 				size: (300,0)
-				id: file_desc
+				id: file_comment
 		
 		BoxLayout:
 			spacing: 15
@@ -52,7 +58,7 @@
 			Button:
 				size_hint: (0,1)
 				text: "Search"
-				on_press: root.select_file( file_icon )
+				on_release: root.select_file( file_icon )
 				
 		BoxLayout:
 			spacing: 15
@@ -67,7 +73,7 @@
 			Button:
 				size_hint: (0,1)
 				text: "Search"
-				on_press: root.select_file( file_exec )
+				on_release: root.select_file( file_exec )
 
 		BoxLayout:
 			BoxLayout:
@@ -78,9 +84,10 @@
 				Button:
 					size_hint: (0,1)
 					id: open_file
-					text: "Open file"
-					on_press: root.open_file()
+					text: "Open"
+					on_release: root.open_file()
 				Button:
 					size_hint: (0,1)
 					id: new_file
-					text: "Save file"
+					text: "Save"
+					on_release: root.save_file()
