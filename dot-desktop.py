@@ -1,3 +1,26 @@
+'''
+	DotDesktop
+	======================================
+	
+	Simple app for creating and editing '.desktop' files.
+	
+	
+	====================
+		MIT License
+	====================
+	
+	
+	Dependencies
+	===================
+		python 2.7
+		kivi 1.9.0
+	
+	Author
+	====================
+	
+		2015 - Alberto Sola
+'''
+
 from kivy.app import App
 
 from kivy.uix.boxlayout import BoxLayout
@@ -29,7 +52,8 @@ Config.set('graphics', 'resizable', 0)
 Config.write()
 
 # Load dialogs gui
-Builder.load_file("dialogs.kv")
+Builder.load_file("views/dialogs.kv")
+Builder.load_file("views/dotdesktop.kv")
 
 # Window size
 window_width = 540
@@ -68,7 +92,7 @@ class AlertPopup(Popup):
 		self.accept_callback = on_accept
 		
 		# On dismiss
-		self.bind( on_dismiss = self.close )
+		#self.bind( on_dismiss = self.close )
 		
 		# Principal layout
 		layout = BoxLayout(orientation='vertical', padding=1)
