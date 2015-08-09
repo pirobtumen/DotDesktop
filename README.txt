@@ -25,9 +25,8 @@ $ sudo apt-get install python-kivy
 
 		Running the app
 ================================
-Inside 'src':
 
-$ python main.py
+$ python dot-desktop.py
 
 
 	Supported file properties
